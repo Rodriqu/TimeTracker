@@ -1,4 +1,4 @@
-package com.example.timetracker.ui.gallery;
+package com.example.timetracker.ui.tasks;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,22 +10,22 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.timetracker.databinding.FragmentGalleryBinding;
+import com.example.timetracker.databinding.FragmentTasksBinding;
 
-public class GalleryFragment extends Fragment {
+public class TasksFragment extends Fragment {
 
-    private FragmentGalleryBinding binding;
+    private FragmentTasksBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        GalleryViewModel galleryViewModel =
-                new ViewModelProvider(this).get(GalleryViewModel.class);
+        TasksViewModel tasksViewModel =
+                new ViewModelProvider(this).get(TasksViewModel.class);
 
-        binding = FragmentGalleryBinding.inflate(inflater, container, false);
+        binding = FragmentTasksBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textGallery;
-        galleryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        final TextView textView = binding.textTasks;
+        tasksViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 
