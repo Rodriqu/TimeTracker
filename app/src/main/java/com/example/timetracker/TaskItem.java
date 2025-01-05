@@ -9,6 +9,37 @@ public class TaskItem {
         this.time = time;
     }
 
+    public String getTimeToDisplay(){
+        if (time == 0) {
+            return "";
+        }
+
+        int hours = this.time / 60;
+        int minutes = time % 60;
+
+        if (hours == 0) {
+            return minutes + "m";
+        }
+
+        if (minutes == 0) {
+            return hours + "h";
+        }
+
+        if (minutes < 10) {
+            return hours + "h 0" + minutes + "m";
+        }
+
+        return hours + "h " + minutes + "m";
+    }
+
+    public void updateTime(int minutesToChange){
+        time += minutesToChange;
+
+        if (time < 0) {
+            time = 0;
+        }
+    }
+
     public String getName() {
         return name;
     }
