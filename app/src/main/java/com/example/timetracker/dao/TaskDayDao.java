@@ -2,6 +2,7 @@ package com.example.timetracker.dao;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 
@@ -23,8 +24,24 @@ public interface TaskDayDao {
     @Query("SELECT SUM(timeLogged) FROM task_days WHERE taskId = :taskId")
     Integer getTotalTimeForTask(long taskId);
 
-    @Query("UPDATE task_days SET timeLogged = :newTime WHERE taskId = :taskId")
-    void setNewTime(long taskId, int newTime);
+    @Query("UPDATE task_days SET timeLogged = :newTime WHERE taskId = :taskId AND date = :date")
+    void setNewTime(long taskId, String date, int newTime);
 
+    @Query("SELECT COUNT(*) FROM task_days WHERE taskId = :taskId AND date = :date")
+    int checkIfTaskExists(long taskId, String date);
+
+    // Insert task if it doesn't exist
+    @Insert
+    void insertTaskIfNotExists(TaskDay taskDay);
+
+    // Wrapper method that checks and inserts
+    default void upsert(long taskId, String date, int newTime) {
+        if (checkIfTaskExists(taskId, date) == 0) {
+            insert(new TaskDay(taskId, date, newTime));
+        }
+        else{
+            setNewTime(taskId, date, newTime);
+        }
+    }
 
 }

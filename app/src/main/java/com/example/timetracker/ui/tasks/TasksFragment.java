@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,9 +18,12 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.timetracker.R;
 import com.example.timetracker.TaskItem;
 import com.example.timetracker.databinding.FragmentTasksBinding;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class TasksFragment extends Fragment {
@@ -26,6 +31,8 @@ public class TasksFragment extends Fragment {
     private FragmentTasksBinding binding;
 
     private TasksViewModel tasksViewModel;
+
+    private TextView currentDateTextView;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -97,10 +104,36 @@ public class TasksFragment extends Fragment {
             }
         };
 
+
+
         // Attach swipe gesture functionality to the RecyclerView
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallback);
         itemTouchHelper.attachToRecyclerView(binding.recyclerView);
 
+
+        ImageButton buttonPreviousDate = requireActivity().findViewById(R.id.previous_date_btn);
+        ImageButton buttonNextDate = requireActivity().findViewById(R.id.next_date_btn);
+        currentDateTextView = requireActivity().findViewById(R.id.date_toolbar_text);
+        LinearLayout currentDateBtn = requireActivity().findViewById(R.id.date_toolbar_btn);
+
+        buttonPreviousDate.setOnClickListener(v -> changeDate(-1));
+        buttonNextDate.setOnClickListener(v -> changeDate(1));
+
+        // Observe the selected date
+        // Update UI
+        tasksViewModel.getSelectedDate().observe(getViewLifecycleOwner(), this::updateDateDisplay);
+    }
+
+    private void updateDateDisplay(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        currentDateTextView.setText(date.format(formatter));
+    }
+
+    public void changeDate(int numberOfDays){
+        LocalDate currentDate = tasksViewModel.getSelectedDate().getValue();
+        if (currentDate != null) {
+            tasksViewModel.setSelectedDate(currentDate.plusDays(numberOfDays));
+        }
     }
 
     @Override

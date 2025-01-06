@@ -1,18 +1,22 @@
 package com.example.timetracker.ui.tasks;
 
 import android.util.Log;
+import android.widget.ImageButton;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.timetracker.AppDatabaseInstance;
+import com.example.timetracker.R;
 import com.example.timetracker.TaskComparators;
 import com.example.timetracker.TaskDay;
 import com.example.timetracker.TaskItem;
 import com.example.timetracker.TaskMain;
 import com.example.timetracker.dao.AppDatabase;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,6 +27,8 @@ public class TasksViewModel extends ViewModel {
     private final MutableLiveData<String> mText;
 
     private final MutableLiveData<List<TaskItem>> tasksItems;
+
+    private final MutableLiveData<LocalDate> selectedDate = new MutableLiveData<>(LocalDate.now());
 
     private final AppDatabase db;
 
@@ -36,17 +42,33 @@ public class TasksViewModel extends ViewModel {
 
         db = AppDatabaseInstance.getInstance();
 
-        fetchTaskItems("06.01.2025");
+        this.fetchTaskItems();
     }
 
-    public void fetchTaskItems(String date){
+    public LiveData<LocalDate> getSelectedDate() {
+        return selectedDate;
+    }
+
+    public String dateToStringForDB(LocalDate date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        return date.format(formatter);
+    }
+
+    public void setSelectedDate(LocalDate date) {
+        selectedDate.setValue(date);
+        this.fetchTaskItems();
+    }
+
+    public void fetchTaskItems(){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 List<TaskItem> taskItemsFetched = tasksItems.getValue();
-                if(taskItemsFetched != null) {
+                if(taskItemsFetched != null && selectedDate.getValue() != null) {
+
+                    taskItemsFetched.clear();
                     // Insert task into Task database
-                    List<TaskDay> taskDays = db.taskDayDao().getTasksOnDay(date);
+                    List<TaskDay> taskDays = db.taskDayDao().getTasksOnDay(dateToStringForDB(selectedDate.getValue()));
                     List<TaskMain> taskMains = db.taskMainDao().getAllTasks();
 
                     for (TaskMain taskMain : taskMains) {
@@ -69,7 +91,6 @@ public class TasksViewModel extends ViewModel {
                 }
             }
         }).start();
-
     }
 
     // Helper method to find TaskMain by ID
@@ -93,7 +114,7 @@ public class TasksViewModel extends ViewModel {
     }
 
     // Add a new task
-    public void addNewTask(String name, int time, String date) {
+    public void addNewTask(String name, int time, LocalDate date) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -102,7 +123,7 @@ public class TasksViewModel extends ViewModel {
                 long taskId = db.taskMainDao().insert(taskMain);
 
                 // Create a log entry and insert into TaskLog database
-                TaskDay taskDay = new TaskDay(taskId, date, time);
+                TaskDay taskDay = new TaskDay(taskId, dateToStringForDB(date), time);
                 db.taskDayDao().insert(taskDay);
 
                 List<TaskItem> currentTasks = tasksItems.getValue();
@@ -121,13 +142,14 @@ public class TasksViewModel extends ViewModel {
 
         // Najpierw aktualizacja frontu
         List<TaskItem> currentTasks = tasksItems.getValue();
-        if (currentTasks != null && position >= 0 && position < currentTasks.size()) {
+        String date = dateToStringForDB(getSelectedDate().getValue());
+        if (currentTasks != null && position >= 0 && position < currentTasks.size() && date != null) {
             TaskItem task = currentTasks.get(position);
             task.updateTime(direction*15);
             tasksItems.setValue(currentTasks);  // Notify LiveData
 
             // Potem wpisanie nowej wartości do DB
-            new Thread(() -> db.taskDayDao().setNewTime(task.getId(), task.getTime())).start();
+            new Thread(() -> db.taskDayDao().upsert(task.getId(), date, task.getTime())).start();
         }
     }
 

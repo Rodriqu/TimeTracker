@@ -8,21 +8,65 @@
     android:clipToPadding="false"
     tools:context=".MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.TimeTracker.AppBarOverlay">
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:popupTheme="@style/Theme.TimeTracker.PopupOverlay">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+        <ImageButton
+            android:id="@+id/previous_date_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="16dp"
             android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.TimeTracker.PopupOverlay" />
+            app:srcCompat="@android:drawable/ic_media_rew" />
 
-    </com.google.android.material.appbar.AppBarLayout>
+        <LinearLayout
+            android:id="@+id/date_toolbar_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true">
 
-    <include layout="@layout/content_main" />
+            <TextView
+                android:id="@+id/date_toolbar_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="TODAY"
+                android:textSize="18sp"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/next_date_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="?attr/colorPrimary"
+            app:srcCompat="@android:drawable/ic_media_ff" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+
+
+
+    <FrameLayout
+        android:id="@+id/task_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:layout_below="@id/toolbar"
+        tools:context=".MainActivity" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -43,7 +87,4 @@
         android:layout_marginBottom="88dp"
         app:maxImageSize="36dp"
         app:srcCompat="@android:drawable/ic_menu_sort_by_size" />
-
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

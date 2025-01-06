@@ -3,11 +3,18 @@ package com.example.timetracker;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.timetracker.dao.AppDatabase;
+import com.example.timetracker.ui.tasks.TasksFragment;
+import com.example.timetracker.ui.tasks.TasksViewModel;
 import com.example.timetracker.ui.tasks.add_task.AddTaskDialogFragment;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -20,7 +27,6 @@ import com.example.timetracker.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
-    private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
 
 
@@ -34,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         AppDatabaseInstance.initialize(getApplicationContext());
 
         setSupportActionBar(binding.appBarMain.toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -41,19 +48,14 @@ public class MainActivity extends AppCompatActivity {
                 dialogFragment.show(getSupportFragmentManager(), "AddTaskDialog");
             }
         });
-        DrawerLayout drawer = binding.drawerLayout;
-        NavigationView navigationView = binding.navView;
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_tasks, R.id.nav_slideshow)
-                .setOpenableLayout(drawer)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
 
 
+        if (savedInstanceState == null) {
+            TasksFragment f1 = new TasksFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.add(R.id.task_fragment, f1);
+            fragmentTransaction.commit();
+        }
     }
 
     @Override
@@ -61,12 +63,5 @@ public class MainActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-                || super.onSupportNavigateUp();
     }
 }
