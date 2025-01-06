@@ -1,10 +1,13 @@
 package com.example.timetracker;
 
 public class TaskItem {
+
+    private long id;
     private String name;
     private int time;
 
-    public TaskItem(String name, int time) {
+    public TaskItem(long id, String name, int time) {
+        this.id = id;
         this.name = name;
         this.time = time;
     }
@@ -47,4 +50,6 @@ public class TaskItem {
     public int getTime() {
         return time;
     }
+
+    public long getId() { return id; }
 }

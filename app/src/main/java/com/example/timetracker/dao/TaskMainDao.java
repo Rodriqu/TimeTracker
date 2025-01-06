@@ -12,8 +12,8 @@ import java.util.List;
 @Dao
 public interface TaskMainDao {
     @Insert
-    void insert(TaskMain task);
+    long insert(TaskMain task);
 
     @Query("SELECT * FROM tasks")
-    LiveData<List<TaskMain>> getAllTasks();
+    List<TaskMain> getAllTasks();
 }

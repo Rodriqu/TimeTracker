@@ -11,11 +11,11 @@ public class TaskDay {
     @PrimaryKey(autoGenerate = true)
     public int id;
 
-    public int taskId; // Foreign key to Task
+    public long taskId; // Foreign key to Task
     public String date; // Format: "DD-MM-YYYY"
     public int timeLogged; // Total time logged for this task in minutes
 
-    public TaskDay(int taskId, String date, int timeLogged) {
+    public TaskDay(long taskId, String date, int timeLogged) {
         this.taskId = taskId;
         this.date = date;
         this.timeLogged = timeLogged;

@@ -86,8 +86,7 @@ public class AddTaskDialogFragment extends DialogFragment {
                     int timeInMinutes = Integer.parseInt(taskTime);
 
                     // Create TaskItem and add it to the ViewModel
-                    TaskItem newTask = new TaskItem(taskName, timeInMinutes);
-                    tasksViewModel.addTask(newTask);
+                    tasksViewModel.addNewTask(taskName, timeInMinutes, "06.01.2025");
                     Toast.makeText(getContext(), "Task added!", Toast.LENGTH_SHORT).show();
 
                     // Dismiss the dialog after saving the task

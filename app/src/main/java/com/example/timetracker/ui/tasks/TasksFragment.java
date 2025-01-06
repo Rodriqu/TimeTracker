@@ -16,11 +16,9 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.timetracker.R;
 import com.example.timetracker.TaskItem;
 import com.example.timetracker.databinding.FragmentTasksBinding;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TasksFragment extends Fragment {
@@ -53,7 +51,7 @@ public class TasksFragment extends Fragment {
         binding.recyclerView.setAdapter(adapter);
 
         // Obserwowanie danych
-        tasksViewModel.getTasks().observe(getViewLifecycleOwner(), taskItems -> {
+        tasksViewModel.getTasksItems().observe(getViewLifecycleOwner(), taskItems -> {
             // Check if taskItems is not null before setting to the adapter
 
             if (taskItems != null && !taskItems.isEmpty()) {
@@ -68,7 +66,7 @@ public class TasksFragment extends Fragment {
         });
 
         adapter.setOnItemClickListener(position -> {
-            List<TaskItem> tasksList = tasksViewModel.getTasks().getValue();
+            List<TaskItem> tasksList = tasksViewModel.getTasksItems().getValue();
             if (tasksList != null && position >= 0 && position < tasksList.size()) {
                 TaskItem clickedTask = tasksList.get(position);
                 Toast.makeText(getContext(), "Clicked: " + clickedTask.getName() + " Position: " + position, Toast.LENGTH_SHORT).show();
@@ -116,7 +114,7 @@ public class TasksFragment extends Fragment {
         super.onResume();
 
         if(tasksViewModel != null){
-            tasksViewModel.sortTasks();
+            tasksViewModel.sortTasksAsync();
         }
     }
 }
