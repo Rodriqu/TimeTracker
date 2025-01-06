@@ -6,8 +6,13 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.timetracker.AppDatabaseInstance;
+import com.example.timetracker.MainActivity;
 import com.example.timetracker.TaskComparators;
 import com.example.timetracker.TaskItem;
+import com.example.timetracker.TaskMain;
+import com.example.timetracker.dao.AppDatabase;
+import com.example.timetracker.dao.TaskMainDao;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +25,8 @@ public class TasksViewModel extends ViewModel {
 
     private final MutableLiveData<List<TaskItem>> tasks;
 
+    private final AppDatabase db;
+
     private Comparator selectedComparator;
 
     public TasksViewModel() {
@@ -27,6 +34,8 @@ public class TasksViewModel extends ViewModel {
         mText.setValue("This is tasks fragment");
 
         tasks = new MutableLiveData<>(new ArrayList<>());
+
+        db = AppDatabaseInstance.getInstance();
 
         //test data
         List<TaskItem> test_tasks = new ArrayList<>();
@@ -37,12 +46,18 @@ public class TasksViewModel extends ViewModel {
         this.setComparator(TaskComparators.BY_TIME); //default comparator
     }
 
+    public LiveData<List<TaskMain>> getAllTasks(){
+        return db.taskMainDao().getAllTasks();
+    }
+
     // Add a new task
     public void addTask(TaskItem task) {
         List<TaskItem> currentTasks = tasks.getValue();
         if (currentTasks != null) {
             currentTasks.add(task);
             tasks.setValue(currentTasks);  // Notify LiveData
+
+            new Thread(() -> )
             this.sortTasks();
         }
     }
