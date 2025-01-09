@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:layout_marginBottom="64dp">
+
+    <!-- Tytuł na górze -->
+<TextView
+android:id="@+id/titleTextEditTask"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:text="Edit Task Details"
+android:textSize="20sp"
+android:textStyle="bold"
+app:layout_constraintTop_toTopOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintBottom_toTopOf="@+id/taskNameEditText"
+android:layout_marginBottom="16dp"
+android:textColor="#000000"/>
+
+    <!-- Pole tekstowe do wprowadzenia nazwy zadania -->
+    <EditText
+        android:id="@+id/taskNameEditText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Task Name"
+        android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleTextEditTask" />
+
+    <!-- Pole tekstowe do wprowadzenia czasu -->
+<EditText
+android:id="@+id/taskTimeEditTask"
+android:layout_width="0dp"
+android:layout_height="wrap_content"
+android:hint="Time (in minutes)"
+android:inputType="number"
+android:padding="12dp"
+android:layout_marginBottom="32dp"
+app:layout_constraintTop_toBottomOf="@+id/taskNameEditText"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Przyciski na dole -->
+<LinearLayout
+android:id="@+id/buttonContainer"
+android:layout_width="0dp"
+android:layout_height="wrap_content"
+android:orientation="horizontal"
+app:layout_constraintBottom_toBottomOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintEnd_toEndOf="parent"
+android:paddingBottom="16dp">
+
+<!-- Przycisk Cancel -->
+<Button
+    android:id="@+id/cancelButtonEditTask"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:text="Cancel"
+    android:background="@android:color/darker_gray"
+    android:textColor="#FFFFFF"
+    android:layout_marginEnd="8dp"/>
+
+<!-- Przycisk Save -->
+<Button
+    android:id="@+id/saveButtonEditTask"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:text="Save"
+    android:background="@android:color/holo_blue_dark"
+    android:textColor="#FFFFFF"/>
+
+</LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Menu;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,7 +15,6 @@ import android.widget.Toast;
 
 import com.example.timetracker.R;
 import com.example.timetracker.ui.tasks.TasksViewModel;
-import com.example.timetracker.TaskItem;
 
 public class AddTaskDialogFragment extends DialogFragment {
 
@@ -54,7 +52,7 @@ public class AddTaskDialogFragment extends DialogFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for the dialog fragment
 
-        return inflater.inflate(R.layout.fragment_add_task, container, false);
+        return inflater.inflate(R.layout.dialog_fragment_add_task, container, false);
     }
 
     @Override
@@ -62,8 +60,8 @@ public class AddTaskDialogFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         // Bind the EditText and Button views
-        taskNameEditText = view.findViewById(R.id.taskNameEditText);
-        taskTimeEditText = view.findViewById(R.id.taskTimeEditText);
+        taskNameEditText = view.findViewById(R.id.taskNameAddText);
+        taskTimeEditText = view.findViewById(R.id.taskTimeAddText);
         Button saveButton = view.findViewById(R.id.saveButton);
         Button cancelButton = view.findViewById(R.id.cancelButton);
 

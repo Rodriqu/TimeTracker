@@ -16,13 +16,13 @@ public interface TaskDayDao {
     void insert(TaskDay taskDay);
 
     @Query("SELECT timeLogged FROM task_days WHERE date = :date AND taskId = :taskId")
-    Integer getTimeForTaskDate(long taskId, String date);
+    int getTimeForTaskDate(long taskId, String date);
 
     @Query("SELECT * FROM task_days WHERE date = :date")
     List<TaskDay> getTasksOnDay(String date);
 
     @Query("SELECT SUM(timeLogged) FROM task_days WHERE taskId = :taskId")
-    Integer getTotalTimeForTask(long taskId);
+    int getTotalTimeForTask(long taskId);
 
     @Query("UPDATE task_days SET timeLogged = :newTime WHERE taskId = :taskId AND date = :date")
     void setNewTime(long taskId, String date, int newTime);
@@ -41,6 +41,16 @@ public interface TaskDayDao {
         }
         else{
             setNewTime(taskId, date, newTime);
+        }
+    }
+
+    default void addTimeOrInsert(long taskId, String date, int addTime) {
+        if (checkIfTaskExists(taskId, date) == 0) {
+            insert(new TaskDay(taskId, date, addTime));
+        }
+        else{
+            int time = getTimeForTaskDate(taskId, date);
+            setNewTime(taskId, date, time + addTime);
         }
     }
 

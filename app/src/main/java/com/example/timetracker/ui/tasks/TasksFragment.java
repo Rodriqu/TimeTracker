@@ -21,6 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.timetracker.R;
 import com.example.timetracker.TaskItem;
 import com.example.timetracker.databinding.FragmentTasksBinding;
+import com.example.timetracker.ui.tasks.add_task.AddTaskDialogFragment;
+import com.example.timetracker.ui.tasks.edit_task.EditTaskDialogFragment;
+import com.example.timetracker.ui.tasks.log_task.LogTaskDialogFragment;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -75,8 +78,16 @@ public class TasksFragment extends Fragment {
         adapter.setOnItemClickListener(position -> {
             List<TaskItem> tasksList = tasksViewModel.getTasksItems().getValue();
             if (tasksList != null && position >= 0 && position < tasksList.size()) {
-                TaskItem clickedTask = tasksList.get(position);
-                Toast.makeText(getContext(), "Clicked: " + clickedTask.getName() + " Position: " + position, Toast.LENGTH_SHORT).show();
+                LogTaskDialogFragment logTaskDialogFragment = new LogTaskDialogFragment(tasksViewModel.getTasksItems().getValue().get(position));
+                logTaskDialogFragment.show(requireActivity().getSupportFragmentManager(), "LogTaskDialog");
+            }
+        });
+
+        adapter.setOnItemLongClickListener(position -> {
+            List<TaskItem> tasksList = tasksViewModel.getTasksItems().getValue();
+            if (tasksList != null && position >= 0 && position < tasksList.size()) {
+                EditTaskDialogFragment editTaskDialogFragment = new EditTaskDialogFragment(tasksViewModel.getTasksItems().getValue().get(position));
+                editTaskDialogFragment.show(requireActivity().getSupportFragmentManager(), "EditTaskDialog");
             }
         });
 

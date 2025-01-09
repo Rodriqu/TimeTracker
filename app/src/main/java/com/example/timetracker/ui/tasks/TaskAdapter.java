@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,8 +26,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
     private OnItemClickListener listener;
 
+    private OnItemLongClickListener longListener;
+
     public interface OnItemClickListener {
         void onItemClick(int position);
+    }
+
+    public interface OnItemLongClickListener {
+        void onItemLongClick(int position);
     }
 
     public interface OnSwipeListener {
@@ -42,6 +49,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
+
+    public void setOnItemLongClickListener(OnItemLongClickListener listener) { this.longListener = listener; }
 
     public void setOnSwipeListener(OnSwipeListener listener) {
         this.swipeListener = listener;
@@ -91,6 +100,18 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                         listener.onItemClick(position);
                     }
                 }
+            });
+
+            itemView.setOnLongClickListener(v -> {
+                if (longListener != null) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        longListener.onItemLongClick(position);
+                        return true;
+                    }
+                }
+
+                return false;
             });
         }
 
