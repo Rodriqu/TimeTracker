@@ -1,19 +1,31 @@
 package com.example.timetracker;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "task_logs")
 public class TaskLog {
     @PrimaryKey(autoGenerate = true)
-    public int id;
+    public long id;
 
-    public int taskId; // Foreign key to Task
-    public String date; // Format: "YYYY-MM-DD"
+    public long taskId; // Foreign key to Task
+    public String dayOfWeek; // Day of week
     public int hourLoggedAt; // hour at which time was logged
 
-    public TaskLog(int taskId, String date, int hourLoggedAt) {
+    public int timeLogged; //timeLogged (added by LogTaskDialog) or 0 if edited or added by swiping
+
+    public TaskLog(long taskId, String dayOfWeek, int hourLoggedAt, int timeLogged) {
         this.taskId = taskId;
-        this.date = date;
+        this.dayOfWeek = dayOfWeek;
         this.hourLoggedAt = hourLoggedAt;
+        this.timeLogged = timeLogged;
+    }
+
+    @Ignore
+    public TaskLog(long taskId, String dayOfWeek, int hourLoggedAt) {
+        this.taskId = taskId;
+        this.dayOfWeek = dayOfWeek;
+        this.hourLoggedAt = hourLoggedAt;
+        this.timeLogged = 0;
     }
 }

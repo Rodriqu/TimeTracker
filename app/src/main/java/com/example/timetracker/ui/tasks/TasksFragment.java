@@ -76,10 +76,13 @@ public class TasksFragment extends Fragment {
         });
 
         adapter.setOnItemClickListener(position -> {
-            List<TaskItem> tasksList = tasksViewModel.getTasksItems().getValue();
-            if (tasksList != null && position >= 0 && position < tasksList.size()) {
-                LogTaskDialogFragment logTaskDialogFragment = new LogTaskDialogFragment(tasksViewModel.getTasksItems().getValue().get(position));
-                logTaskDialogFragment.show(requireActivity().getSupportFragmentManager(), "LogTaskDialog");
+            String dialogTag = "LogTaskDialog";
+            if(requireActivity().getSupportFragmentManager().findFragmentByTag(dialogTag) == null) {
+                List<TaskItem> tasksList = tasksViewModel.getTasksItems().getValue();
+                if (tasksList != null && position >= 0 && position < tasksList.size()) {
+                    LogTaskDialogFragment logTaskDialogFragment = new LogTaskDialogFragment(tasksViewModel.getTasksItems().getValue().get(position));
+                    logTaskDialogFragment.show(requireActivity().getSupportFragmentManager(), dialogTag);
+                }
             }
         });
 

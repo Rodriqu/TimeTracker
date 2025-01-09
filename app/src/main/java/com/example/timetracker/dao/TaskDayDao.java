@@ -30,10 +30,6 @@ public interface TaskDayDao {
     @Query("SELECT COUNT(*) FROM task_days WHERE taskId = :taskId AND date = :date")
     int checkIfTaskExists(long taskId, String date);
 
-    // Insert task if it doesn't exist
-    @Insert
-    void insertTaskIfNotExists(TaskDay taskDay);
-
     // Wrapper method that checks and inserts
     default void upsert(long taskId, String date, int newTime) {
         if (checkIfTaskExists(taskId, date) == 0) {

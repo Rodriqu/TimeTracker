@@ -10,15 +10,19 @@ import com.example.timetracker.AppDatabaseInstance;
 import com.example.timetracker.TaskComparators;
 import com.example.timetracker.TaskDay;
 import com.example.timetracker.TaskItem;
+import com.example.timetracker.TaskLog;
 import com.example.timetracker.TaskMain;
 import com.example.timetracker.dao.AppDatabase;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import kotlinx.coroutines.scheduling.Task;
 
@@ -150,6 +154,7 @@ public class TasksViewModel extends ViewModel {
             public void run() {
                 db.taskMainDao().updateName(taskItem.getName(), taskItem.getId());
                 db.taskDayDao().upsert(taskItem.getId(), dateToStringForDB(date), taskItem.getTime());
+                db.taskLogDao().insert(new TaskLog(taskItem.getId(), getDayOfWeekToday(), getHourNow()));
                 fetchTaskItems();
             }
         }).start();
@@ -163,6 +168,7 @@ public class TasksViewModel extends ViewModel {
             @Override
             public void run() {
                 db.taskDayDao().addTimeOrInsert(taskItem.getId(), dateToStringForDB(date), timeToAddMinutes);
+                db.taskLogDao().insert(new TaskLog(taskItem.getId(), getDayOfWeekToday(), getHourNow(), timeToAddMinutes));
                 fetchTaskItems();
             }
         }).start();
@@ -180,7 +186,14 @@ public class TasksViewModel extends ViewModel {
             tasksItems.setValue(currentTasks);  // Notify LiveData
 
             // Potem wpisanie nowej wartości do DB
-            new Thread(() -> db.taskDayDao().upsert(task.getId(), date, task.getTime())).start();
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    db.taskDayDao().upsert(task.getId(), date, task.getTime());
+                    db.taskLogDao().insert(new TaskLog(task.getId(), getDayOfWeekToday(), getHourNow()));
+                    fetchTaskItems();
+                }
+            }).start();
         }
     }
 
@@ -195,6 +208,19 @@ public class TasksViewModel extends ViewModel {
             Collections.sort(currentTasks, selectedComparator);
             tasksItems.postValue(currentTasks); // Notify observers about the sorted list
         }
+    }
+
+    public String getDayOfWeek(LocalDate date){
+        return date.getDayOfWeek()
+                .getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+    }
+
+    public String getDayOfWeekToday(){
+        return getDayOfWeek(LocalDate.now());
+    }
+
+    public int getHourNow(){
+        return LocalTime.now().getHour();
     }
 
     public LiveData<List<TaskItem>> getTasksItems() {
