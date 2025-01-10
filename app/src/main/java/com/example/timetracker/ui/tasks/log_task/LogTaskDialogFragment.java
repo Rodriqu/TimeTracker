@@ -97,11 +97,11 @@ public class LogTaskDialogFragment extends DialogFragment {
         this.setSmartTime(15);
 
         // Set up button actions
-        setUpButtons(saveButton, cancelButton);
+        setUpButtons(saveButton, cancelButton, view);
         this.calculateAndUpdateMostFrequentLoggedTime(taskItem.getId());
     }
 
-    private void setUpButtons(Button saveButton, Button cancelButton) {
+    private void setUpButtons(Button saveButton, Button cancelButton, View view) {
         // Set up the Cancel button to dismiss the dialog
         cancelButton.setOnClickListener(v -> dismiss());
 
@@ -115,6 +115,55 @@ public class LogTaskDialogFragment extends DialogFragment {
             tasksViewModel.addTimeToTask(taskItem, time, tasksViewModel.getSelectedDate().getValue());
 
             dismiss();
+        });
+
+        view.findViewById(R.id.smart_button_right_log_task).setOnClickListener(v -> {
+            int hour = smartTime / 60;
+            int minutes = smartTime % 60;
+
+            int hourPicked = timePicker.getHour();
+            int minutesPicked = timePicker.getMinute();
+
+            minutes += minutesPicked;
+
+            if (minutes >= 60){
+                hour += 1;
+                minutes -= 60;
+            }
+
+            hour += hourPicked;
+
+            if (hour >= 24){
+                hour = 23;
+                minutes = 59;
+            }
+
+            timePicker.setMinute(minutes);
+            timePicker.setHour(hour);
+        });
+
+        view.findViewById(R.id.smart_button_left_log_task).setOnClickListener(v -> {
+            int hour = smartTime / 60;
+            int minutes = smartTime % 60;
+
+            int hourPicked = timePicker.getHour();
+            int minutesPicked = timePicker.getMinute();
+
+            minutes = minutesPicked - minutes;
+            hour = hourPicked - hour;
+
+            if (minutes < 0){
+                hour = hour - 1;
+                minutes = 60 + minutes;
+            }
+
+            if (hour < 0){
+                hour = 0;
+                minutes = 0;
+            }
+
+            timePicker.setMinute(minutes);
+            timePicker.setHour(hour);
         });
     }
 
