@@ -6,10 +6,14 @@ public class TaskItem {
     private String name;
     private int time;
 
+    //points for smartSort
+    private int smartPoints;
+
     public TaskItem(long id, String name, int time) {
         this.id = id;
         this.name = name;
         this.time = time;
+        smartPoints = 0;
     }
 
     public String getTimeToDisplay(){
@@ -51,5 +55,11 @@ public class TaskItem {
         return time;
     }
 
+    public int getSmartPoints() { return smartPoints; }
+
     public long getId() { return id; }
+
+    public void setSmartPoints(int smartPoints) {
+        this.smartPoints = smartPoints;
+    }
 }

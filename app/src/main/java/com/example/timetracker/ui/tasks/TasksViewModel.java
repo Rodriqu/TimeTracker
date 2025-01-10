@@ -20,11 +20,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-
-import kotlinx.coroutines.scheduling.Task;
 
 public class TasksViewModel extends ViewModel {
 
@@ -36,7 +33,7 @@ public class TasksViewModel extends ViewModel {
 
     private final AppDatabase db;
 
-    private Comparator selectedComparator = TaskComparators.BY_TIME;
+    private TaskComparators selectedComparator = TaskComparators.BY_SMART;
 
     public TasksViewModel() {
         mText = new MutableLiveData<>();
@@ -191,21 +188,32 @@ public class TasksViewModel extends ViewModel {
                 public void run() {
                     db.taskDayDao().upsert(task.getId(), date, task.getTime());
                     db.taskLogDao().insert(new TaskLog(task.getId(), getDayOfWeekToday(), getHourNow()));
-                    fetchTaskItems();
                 }
             }).start();
         }
     }
 
-    public void setComparator(Comparator<TaskItem> comparator){
+    public void setComparator(TaskComparators comparator){
         selectedComparator = comparator;
-        this.sortTasksAsync();
+        // reload tasks and sort
+        this.fetchTaskItems();
+    }
+
+    public String setNextSortOrder(){
+        TaskComparators taskComparators = selectedComparator.getNextComparator();
+        setComparator(taskComparators);
+        return taskComparators.toString();
     }
 
     public void sortTasksAsync(){
         List<TaskItem> currentTasks = tasksItems.getValue();
         if (currentTasks != null) {
-            Collections.sort(currentTasks, selectedComparator);
+            if (selectedComparator == TaskComparators.BY_SMART) {
+                for (TaskItem taskItem : currentTasks) {
+                    taskItem.setSmartPoints(calculatePointsForSmartSortForTask(taskItem.getId()));
+                }
+            }
+            Collections.sort(currentTasks, selectedComparator.getComparator());
             tasksItems.postValue(currentTasks); // Notify observers about the sorted list
         }
     }
@@ -221,6 +229,66 @@ public class TasksViewModel extends ViewModel {
 
     public int getHourNow(){
         return LocalTime.now().getHour();
+    }
+
+    public int calculatePointsForSmartSortForTask(long taskId){
+        List<TaskLog> taskLogs = db.taskLogDao().getLogsForTask(taskId);
+        int calcPoints = 0;
+
+        if (!taskLogs.isEmpty()){
+            int hourNow = this.getHourNow();
+            for (TaskLog taskLog : taskLogs){
+                calcPoints += taskLog.calculatePointsForSmartSort(hourNow);
+            }
+
+            // Adjust based on the spread of logs
+            // If logs are clustered together in a small time range that's in hourNow range, this should be rewarded
+            int logSpreadReward = calculateLogSpreadReward(taskLogs, hourNow);
+            calcPoints += logSpreadReward;
+
+            // Dynamic frequency penalty
+            // Use a logarithmic function to penalize tasks with high log counts gently
+            if(taskLogs.size() > 5) {
+                double logFrequencyPenalty = Math.log(taskLogs.size());
+                calcPoints = (int) (calcPoints / logFrequencyPenalty);
+            }
+        }
+
+        Log.d("SmartSort", calcPoints + " " + taskId);
+
+        return -calcPoints; //lower number goes first in comparator
+    }
+
+    // Reward tasks with clusters of logs close to the current time
+    private static int calculateLogSpreadReward(List<TaskLog> taskLogs, int currentHour) {
+        int reward = 0;
+
+        // Group logs into time buckets (e.g., hourly)
+        int[] timeBuckets = new int[24];  // 24 hours in a day
+
+        // Count how many logs fall into each bucket
+        for (TaskLog log : taskLogs) {
+            timeBuckets[log.hourLoggedAt]++;  // Increment the count for the log's hour
+        }
+
+        // Now calculate the reward based on clusters around `currentHour`
+        for (int i = 0; i < timeBuckets.length; i++) {
+            int distance = Math.abs(i - currentHour);  // Distance from current hour
+            int clusterSize = timeBuckets[i];  // How many logs in this hour
+
+            // Reward for clusters centered around `currentHour`
+            if (clusterSize > 0) {
+                if (distance == 0) {
+                    reward += clusterSize * 10;  // Strong reward for exact match (closer clusters)
+                } else if (distance == 1) {
+                    reward += clusterSize * 5;   // Medium reward for nearby clusters
+                } else if (distance <= 3) {
+                    reward += clusterSize * 2;   // Small reward for slightly farther clusters
+                }
+            }
+        }
+
+        return reward;
     }
 
     public LiveData<List<TaskItem>> getTasksItems() {

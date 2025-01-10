@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.timetracker.dao.AppDatabase;
 import com.example.timetracker.ui.tasks.TasksFragment;
@@ -41,14 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.appBarMain.toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AddTaskDialogFragment dialogFragment = new AddTaskDialogFragment();
-                dialogFragment.show(getSupportFragmentManager(), "AddTaskDialog");
-            }
-        });
-
 
         if (savedInstanceState == null) {
             TasksFragment f1 = new TasksFragment();
@@ -56,6 +49,14 @@ public class MainActivity extends AppCompatActivity {
             fragmentTransaction.add(R.id.task_fragment, f1);
             fragmentTransaction.commit();
         }
+
+        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AddTaskDialogFragment dialogFragment = new AddTaskDialogFragment();
+                dialogFragment.show(getSupportFragmentManager(), "AddTaskDialog");
+            }
+        });
     }
 
     @Override

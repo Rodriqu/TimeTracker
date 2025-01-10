@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey;
 public class TaskLog {
     @PrimaryKey(autoGenerate = true)
     public long id;
-
     public long taskId; // Foreign key to Task
     public String dayOfWeek; // Day of week
     public int hourLoggedAt; // hour at which time was logged
@@ -27,5 +26,24 @@ public class TaskLog {
         this.dayOfWeek = dayOfWeek;
         this.hourLoggedAt = hourLoggedAt;
         this.timeLogged = 0;
+    }
+
+    //more points is better
+    public int calculatePointsForSmartSort(int hourNow){
+        int margin = 2; //to add flexibility
+        int points = 0;
+
+        int hourDifference = Math.abs(hourLoggedAt - hourNow);
+
+        // Close logs (within margin) are considered high priority
+        if (hourDifference <= margin) {
+            points += 20;  // High points for logs close to the current hour (within margin)
+        } else if (hourDifference == margin + 1) {
+            points += 5;   // Medium points for logs that are 1 hour away
+        } else {
+            points += 1;   // Low points for logs that are far from the current hour
+        }
+
+        return points;
     }
 }

@@ -118,8 +118,6 @@ public class TasksFragment extends Fragment {
             }
         };
 
-
-
         // Attach swipe gesture functionality to the RecyclerView
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallback);
         itemTouchHelper.attachToRecyclerView(binding.recyclerView);
@@ -136,6 +134,14 @@ public class TasksFragment extends Fragment {
         // Observe the selected date
         // Update UI
         tasksViewModel.getSelectedDate().observe(getViewLifecycleOwner(), this::updateDateDisplay);
+
+        requireActivity().findViewById(R.id.fab_sort).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String sortBy = tasksViewModel.setNextSortOrder();
+                Toast.makeText(getContext(), sortBy, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void updateDateDisplay(LocalDate date) {
@@ -161,7 +167,7 @@ public class TasksFragment extends Fragment {
         super.onResume();
 
         if(tasksViewModel != null){
-            tasksViewModel.sortTasksAsync();
+            new Thread(() -> tasksViewModel.sortTasksAsync()).start();
         }
     }
 }

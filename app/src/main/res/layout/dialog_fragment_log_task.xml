@@ -44,6 +44,42 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/time_picker_log_task">
+
+        <Button
+            android:id="@+id/smart_button_left_log_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Left"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_bias="0.5"
+            android:layout_marginEnd="16dp" />
+
+        <TextView
+            android:id="@+id/smart_time_log_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="15m"
+            android:gravity="center"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@id/smart_button_left_log_task"
+            app:layout_constraintEnd_toStartOf="@id/smart_button_right_log_task"
+            app:layout_constraintVertical_bias="0.5" />
+
+        <Button
+            android:id="@+id/smart_button_right_log_task"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Right"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintVertical_bias="0.5"
+            android:layout_marginStart="16dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Przyciski na dole -->
     <LinearLayout
@@ -78,5 +114,8 @@
             android:textColor="#FFFFFF"/>
 
     </LinearLayout>
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
