@@ -84,10 +84,10 @@ public class TasksViewModel extends ViewModel {
 
                         if (taskDay != null) {
                             // Create TaskItem and add to the list
-                            TaskItem taskItem = new TaskItem(taskMain.id, taskMain.name, taskDay.timeLogged);
+                            TaskItem taskItem = new TaskItem(taskMain.id, taskMain.name, taskDay.timeLogged, taskMain.updateLeft, taskMain.updateRight);
                             taskItemsFetched.add(taskItem);
                         } else {
-                            TaskItem taskItem = new TaskItem(taskMain.id, taskMain.name, 0);
+                            TaskItem taskItem = new TaskItem(taskMain.id, taskMain.name, 0, taskMain.updateLeft, taskMain.updateRight);
                             taskItemsFetched.add(taskItem);
                         }
                     }
@@ -120,12 +120,12 @@ public class TasksViewModel extends ViewModel {
     }
 
     // Add a new task
-    public void addNewTask(String name, int time, LocalDate date) {
+    public void addNewTask(String name, int time, LocalDate date, int updateLeft, int updateRight) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 // Insert task into Task database
-                TaskMain taskMain = new TaskMain(name);
+                TaskMain taskMain = new TaskMain(name, updateLeft, updateRight);
                 long taskId = db.taskMainDao().insert(taskMain);
 
                 // Create a log entry and insert into TaskLog database
@@ -134,7 +134,7 @@ public class TasksViewModel extends ViewModel {
 
                 List<TaskItem> currentTasks = tasksItems.getValue();
                 if (currentTasks != null) {
-                    TaskItem taskItem = new TaskItem(taskId, name, time);
+                    TaskItem taskItem = new TaskItem(taskId, name, time, updateLeft, updateRight);
                     currentTasks.add(taskItem);
                     tasksItems.postValue(currentTasks);  // Notify LiveData
                     sortTasksAsync();
@@ -150,6 +150,7 @@ public class TasksViewModel extends ViewModel {
             @Override
             public void run() {
                 db.taskMainDao().updateName(taskItem.getName(), taskItem.getId());
+                db.taskMainDao().updateLeftRight(taskItem.getId(), taskItem.getUpdateLeft(), taskItem.getUpdateRight());
                 db.taskDayDao().upsert(taskItem.getId(), dateToStringForDB(date), taskItem.getTime());
                 db.taskLogDao().insert(new TaskLog(taskItem.getId(), getDayOfWeekToday(), getHourNow()));
                 fetchTaskItems();
@@ -179,7 +180,16 @@ public class TasksViewModel extends ViewModel {
         String date = dateToStringForDB(getSelectedDate().getValue());
         if (currentTasks != null && position >= 0 && position < currentTasks.size() && date != null) {
             TaskItem task = currentTasks.get(position);
-            task.updateTime(direction*15);
+
+            int updateValue;
+            if (direction == 1) {
+                updateValue = task.getUpdateRight();
+            }
+            else{
+                updateValue = task.getUpdateLeft();
+            }
+
+            task.updateTime(updateValue);
             tasksItems.setValue(currentTasks);  // Notify LiveData
 
             // Potem wpisanie nowej wartości do DB

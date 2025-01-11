@@ -20,4 +20,7 @@ public interface TaskMainDao {
 
     @Query("UPDATE tasks SET name = :name WHERE id = :taskId")
     void updateName(String name, long taskId);
+
+    @Query("UPDATE tasks SET updateLeft = :updateLeft, updateRight = :updateRight WHERE id = :taskId")
+    void updateLeftRight(long taskId, int updateLeft, int updateRight);
 }

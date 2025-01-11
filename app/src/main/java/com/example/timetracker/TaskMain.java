@@ -9,7 +9,13 @@ public class TaskMain {
 
     public String name;
 
-    public TaskMain(String name) {
+    public int updateLeft;
+
+    public int updateRight;
+
+    public TaskMain(String name, int updateLeft, int updateRight) {
         this.name = name;
+        this.updateLeft = updateLeft;
+        this.updateRight = updateRight;
     }
 }

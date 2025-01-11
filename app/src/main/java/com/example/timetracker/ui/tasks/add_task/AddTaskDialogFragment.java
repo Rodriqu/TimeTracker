@@ -15,12 +15,13 @@ import android.widget.Toast;
 
 import com.example.timetracker.R;
 import com.example.timetracker.ui.tasks.TasksViewModel;
+import com.example.timetracker.ui.tasks.TimeEditText;
 
 public class AddTaskDialogFragment extends DialogFragment {
 
 
     private EditText taskNameEditText;
-    private EditText taskTimeEditText;
+    private TimeEditText taskTimeEditText;
     private TasksViewModel tasksViewModel;
 
     public AddTaskDialogFragment() {
@@ -61,7 +62,7 @@ public class AddTaskDialogFragment extends DialogFragment {
 
         // Bind the EditText and Button views
         taskNameEditText = view.findViewById(R.id.taskNameAddText);
-        taskTimeEditText = view.findViewById(R.id.taskTimeAddText);
+        taskTimeEditText = view.findViewById(R.id.taskTimeAddTask);
         Button saveButton = view.findViewById(R.id.saveButton);
         Button cancelButton = view.findViewById(R.id.cancelButton);
 
@@ -73,31 +74,30 @@ public class AddTaskDialogFragment extends DialogFragment {
         // Set up the Cancel button to dismiss the dialog
         cancelButton.setOnClickListener(v -> dismiss());
 
+        //default
+        int updateLeft = 15;
+        int updateRight = 60;
+
         // Set up the Save button to add the task to the ViewModel
         saveButton.setOnClickListener(v -> {
             String taskName = taskNameEditText.getText().toString().trim();
-            String taskTime = taskTimeEditText.getText().toString().trim();
+            int time = taskTimeEditText.getTotalMinutes();
 
             // Validate input before adding task
-            if (!taskName.isEmpty() && !taskTime.isEmpty()) {
-                try {
-                    int timeInMinutes = Integer.parseInt(taskTime);
+            if (!taskName.isEmpty() && time >= 0) {
+                // Create TaskItem and add it to the ViewModel
+                tasksViewModel.addNewTask(taskName, time, tasksViewModel.getSelectedDate().getValue(), updateLeft, updateRight);
+                Toast.makeText(getContext(), "Task added!", Toast.LENGTH_SHORT).show();
 
-                    // Create TaskItem and add it to the ViewModel
-                    tasksViewModel.addNewTask(taskName, timeInMinutes, tasksViewModel.getSelectedDate().getValue());
-                    Toast.makeText(getContext(), "Task added!", Toast.LENGTH_SHORT).show();
+                // Dismiss the dialog after saving the task
+                dismiss();
 
-                    // Dismiss the dialog after saving the task
-                    dismiss();
-                } catch (NumberFormatException e) {
-                    taskTimeEditText.setError("Please enter a valid time in minutes.");
-                }
             } else {
                 if (taskName.isEmpty()) {
                     taskNameEditText.setError("Please enter task name.");
                 }
-                if (taskTime.isEmpty()) {
-                    taskTimeEditText.setError("Please enter task time.");
+                else {
+                    Toast.makeText(getContext(), "Please enter valid time", Toast.LENGTH_SHORT).show();
                 }
             }
         });

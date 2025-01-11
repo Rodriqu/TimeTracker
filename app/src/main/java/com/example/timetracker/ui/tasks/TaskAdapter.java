@@ -85,12 +85,14 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
     public class TaskViewHolder extends RecyclerView.ViewHolder {
 
-        TextView taskName, taskTime;
+        TextView taskName, taskTime, leftTime, rightTime;
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
             taskName = itemView.findViewById(R.id.activityName);
             taskTime = itemView.findViewById(R.id.activityTime);
+            leftTime = itemView.findViewById(R.id.activityLeftSwipe);
+            rightTime = itemView.findViewById(R.id.activityRightSwipe);
 
             itemView.setOnClickListener(v -> {
 
@@ -118,6 +120,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         public void bind(TaskItem task) {
             taskName.setText(task.getName());
             taskTime.setText(task.getTimeToDisplay());
+            leftTime.setText(task.getTextUpdateLeft());
+            rightTime.setText(task.getTextUpdateRight());
         }
     }
 }

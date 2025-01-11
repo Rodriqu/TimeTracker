@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.timetracker.R;
 import com.example.timetracker.TaskItem;
 import com.example.timetracker.databinding.FragmentTasksBinding;
-import com.example.timetracker.ui.tasks.add_task.AddTaskDialogFragment;
 import com.example.timetracker.ui.tasks.edit_task.EditTaskDialogFragment;
 import com.example.timetracker.ui.tasks.log_task.LogTaskDialogFragment;
 
@@ -34,6 +33,9 @@ public class TasksFragment extends Fragment {
     private FragmentTasksBinding binding;
 
     private TasksViewModel tasksViewModel;
+
+    private Toast currentToastUpdate;
+    private Toast currentToastSort;
 
     private TextView currentDateTextView;
 
@@ -96,7 +98,11 @@ public class TasksFragment extends Fragment {
 
         adapter.setOnSwipeListener((position, direction) -> {
             tasksViewModel.updateTaskTime(position, direction);
-            Toast.makeText(getContext(), "Task time updated!", Toast.LENGTH_SHORT).show();
+            if (currentToastUpdate != null){
+                currentToastUpdate.cancel();
+            }
+            currentToastUpdate = Toast.makeText(getContext(), "Task time updated!", Toast.LENGTH_SHORT);
+            currentToastUpdate.show();
         });
 
         ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new ItemTouchHelper.SimpleCallback(0,  ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -139,7 +145,11 @@ public class TasksFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 String sortBy = tasksViewModel.setNextSortOrder();
-                Toast.makeText(getContext(), sortBy, Toast.LENGTH_SHORT).show();
+                if (currentToastSort != null){
+                    currentToastSort.cancel();
+                }
+                currentToastSort = Toast.makeText(getContext(), sortBy, Toast.LENGTH_SHORT);
+                currentToastSort.show();
             }
         });
     }
