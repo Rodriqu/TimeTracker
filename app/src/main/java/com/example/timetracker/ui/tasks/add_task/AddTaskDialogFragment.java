@@ -19,19 +19,13 @@ import com.example.timetracker.ui.tasks.TimeEditText;
 
 public class AddTaskDialogFragment extends DialogFragment {
 
-
     private EditText taskNameEditText;
     private TimeEditText taskTimeEditText;
     private TasksViewModel tasksViewModel;
 
-    public AddTaskDialogFragment() {
-
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        // Initialize the ViewModel when the fragment is attached
         tasksViewModel = new ViewModelProvider(requireActivity()).get(TasksViewModel.class);
     }
 
@@ -51,8 +45,6 @@ public class AddTaskDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for the dialog fragment
-
         return inflater.inflate(R.layout.dialog_fragment_add_task, container, false);
     }
 

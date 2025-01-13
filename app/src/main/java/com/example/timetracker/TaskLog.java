@@ -7,10 +7,10 @@ import androidx.room.PrimaryKey;
 public class TaskLog {
     @PrimaryKey(autoGenerate = true)
     public long id;
+
     public long taskId; // Foreign key to Task
     public String dayOfWeek; // Day of week
     public int hourLoggedAt; // hour at which time was logged
-
     public int timeLogged; //timeLogged (added by LogTaskDialog) or 0 if edited or added by swiping
 
     public TaskLog(long taskId, String dayOfWeek, int hourLoggedAt, int timeLogged) {

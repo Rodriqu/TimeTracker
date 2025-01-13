@@ -8,7 +8,6 @@ public class TaskItem {
 
     //points for smartSort
     private int smartPoints;
-
     private int updateLeft;
     private int updateRight;
 

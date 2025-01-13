@@ -21,8 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginRight="16dp"
-            android:background="?attr/colorPrimary"
-            app:srcCompat="@android:drawable/ic_media_rew" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:srcCompat="?attr/homeAsUpIndicator" />
 
         <LinearLayout
             android:id="@+id/date_toolbar_btn"
@@ -32,18 +32,21 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true">
 
             <TextView
                 android:id="@+id/date_toolbar_text"
                 android:layout_width="wrap_content"
+                android:minWidth="110dp"
+                android:textAlignment="center"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="TODAY"
+                android:textColor="@android:color/black"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:textSize="18sp"
-                android:textColor="@android:color/black" />
+                android:textStyle="bold" />
         </LinearLayout>
 
         <ImageButton
@@ -51,13 +54,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="?attr/colorPrimary"
-            app:srcCompat="@android:drawable/ic_media_ff" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:rotationX="0"
+            android:rotationY="180"
+            app:srcCompat="?attr/homeAsUpIndicator" />
 
     </androidx.appcompat.widget.Toolbar>
-
-
-
 
     <FrameLayout
         android:id="@+id/task_fragment"

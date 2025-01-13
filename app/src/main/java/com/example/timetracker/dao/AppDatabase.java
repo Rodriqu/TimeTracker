@@ -10,6 +10,5 @@ import com.example.timetracker.TaskMain;
 public abstract class AppDatabase extends RoomDatabase {
     public abstract TaskMainDao taskMainDao();
     public abstract TaskLogDao taskLogDao();
-
     public abstract TaskDayDao taskDayDao();
 }

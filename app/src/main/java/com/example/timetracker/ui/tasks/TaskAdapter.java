@@ -56,7 +56,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         this.swipeListener = listener;
     }
 
-
     public void updateTasks(List<TaskItem> newTasks) {
         taskList = newTasks;
         notifyDataSetChanged();
@@ -76,7 +75,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         TaskItem task = taskList.get(position);
         holder.bind(task);
     }
-
 
     @Override
     public int getItemCount() {

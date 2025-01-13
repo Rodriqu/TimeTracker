@@ -32,11 +32,13 @@ import java.util.Map;
 public class LogTaskDialogFragment extends DialogFragment {
 
     private final TaskItem taskItem;
+
     private TasksViewModel tasksViewModel;
 
     private TimePicker timePicker;
 
     private MutableLiveData<String> smartTextLiveData = new MutableLiveData<>();
+
     private int smartTime;
 
     public LogTaskDialogFragment(TaskItem task) {
@@ -46,7 +48,6 @@ public class LogTaskDialogFragment extends DialogFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        // Initialize the ViewModel when the fragment is attached
         tasksViewModel = new ViewModelProvider(requireActivity()).get(TasksViewModel.class);
     }
 
@@ -64,8 +65,6 @@ public class LogTaskDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for the dialog fragment
-
         return inflater.inflate(R.layout.dialog_fragment_log_task, container, false);
     }
 
@@ -111,7 +110,7 @@ public class LogTaskDialogFragment extends DialogFragment {
             int minutes = timePicker.getMinute();
             int time = minutes + 60 * hour;
 
-            //date przekazywane na przyszlosc gdyby mozna bylo zmieniac datę
+            //date for future feature
             tasksViewModel.addTimeToTask(taskItem, time, tasksViewModel.getSelectedDate().getValue());
 
             dismiss();
@@ -175,7 +174,7 @@ public class LogTaskDialogFragment extends DialogFragment {
 
                 if (taskLogs.isEmpty()) return;
 
-                // Step 1: Count the frequency of each hourLoggedAt value
+                // Count the frequency of each hourLoggedAt value
                 Map<Integer, Integer> frequencyMap = new HashMap<>();
 
                 for (TaskLog taskLog : taskLogs) {
@@ -188,7 +187,7 @@ public class LogTaskDialogFragment extends DialogFragment {
 
                 if (frequencyMap.isEmpty()) return;
 
-                // Step 2: Find the most frequent rounded time
+                // Find the most frequent rounded time
                 int mostFrequentTime = -1;
                 int highestFrequency = 0;
 
@@ -231,5 +230,4 @@ public class LogTaskDialogFragment extends DialogFragment {
     public void setSmartText(String newText) {
         smartTextLiveData.postValue(newText);
     }
-
 }

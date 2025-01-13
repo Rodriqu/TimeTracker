@@ -141,8 +141,6 @@ public class TimeEditText extends LinearLayout {
                 if (!text.isEmpty()) {
                     int minutes = Integer.parseInt(text);
                     if (minutes > 59) {
-                        //editText.setText("59");
-                        //editText.setSelection(editText.getText().length());
                         editText.setError("Enter correct number of minutes");
                     }
                 }

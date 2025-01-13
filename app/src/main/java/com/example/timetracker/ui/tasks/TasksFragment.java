@@ -1,8 +1,11 @@
 package com.example.timetracker.ui.tasks;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -26,7 +29,9 @@ import com.example.timetracker.ui.tasks.log_task.LogTaskDialogFragment;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class TasksFragment extends Fragment {
 
@@ -35,9 +40,10 @@ public class TasksFragment extends Fragment {
     private TasksViewModel tasksViewModel;
 
     private Toast currentToastUpdate;
+
     private Toast currentToastSort;
 
-    private TextView currentDateTextView;
+    private TextView selectedDateTextView;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -56,7 +62,6 @@ public class TasksFragment extends Fragment {
         final TextView textView = binding.textTasks;
         tasksViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-
         // Initialize RecyclerView
         TaskAdapter adapter = new TaskAdapter();
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -69,8 +74,6 @@ public class TasksFragment extends Fragment {
             if (taskItems != null && !taskItems.isEmpty()) {
                 adapter.updateTasks(taskItems);
                 Log.d("TasksFragment", "LiveData updated. Task count: " + taskItems.size());
-                Log.i("TAG", "This is an info message");
-
             } else {
                 // Handle empty list case
                 Toast.makeText(getContext(), "No tasks available", Toast.LENGTH_SHORT).show();
@@ -128,10 +131,9 @@ public class TasksFragment extends Fragment {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(itemTouchHelperCallback);
         itemTouchHelper.attachToRecyclerView(binding.recyclerView);
 
-
         ImageButton buttonPreviousDate = requireActivity().findViewById(R.id.previous_date_btn);
         ImageButton buttonNextDate = requireActivity().findViewById(R.id.next_date_btn);
-        currentDateTextView = requireActivity().findViewById(R.id.date_toolbar_text);
+        selectedDateTextView = requireActivity().findViewById(R.id.date_toolbar_text);
         LinearLayout currentDateBtn = requireActivity().findViewById(R.id.date_toolbar_btn);
 
         buttonPreviousDate.setOnClickListener(v -> changeDate(-1));
@@ -152,11 +154,41 @@ public class TasksFragment extends Fragment {
                 currentToastSort.show();
             }
         });
+
+        selectedDateTextView.setOnClickListener(v -> {
+            int year = tasksViewModel.getSelectedDate().getValue().getYear();
+            int month = tasksViewModel.getSelectedDate().getValue().getMonthValue() - 1; // Month is 0-based in DatePickerDialog
+            int day = tasksViewModel.getSelectedDate().getValue().getDayOfMonth();
+
+            // Show the DatePickerDialog
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                    requireActivity(),
+                    (datePicker, selectedYear, selectedMonth, selectedDay) -> {
+                        // Create a new LocalDate from the selected values
+                        LocalDate selectedDate = LocalDate.of(selectedYear, selectedMonth + 1, selectedDay);
+                        // Update the TextView with the formatted date
+                        tasksViewModel.setSelectedDate(selectedDate);
+                    },
+                    year, month, day
+            );
+            datePickerDialog.show();
+        });
     }
 
     private void updateDateDisplay(LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        currentDateTextView.setText(date.format(formatter));
+        if (date.equals(LocalDate.now().minusDays(1))){
+            selectedDateTextView.setText("YESTERDAY");
+        }
+        else if (date.equals(LocalDate.now())) {
+            selectedDateTextView.setText("TODAY");
+        }
+        else if (date.equals(LocalDate.now().plusDays(1))) {
+            selectedDateTextView.setText("TOMORROW");
+        }
+        else{
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            selectedDateTextView.setText(date.format(formatter));
+        }
     }
 
     public void changeDate(int numberOfDays){

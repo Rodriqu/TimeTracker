@@ -7,7 +7,6 @@ import java.util.Comparator;
 public enum TaskComparators {
     BY_NAME((task1, task2) -> task1.getName().compareToIgnoreCase(task2.getName())),
     BY_TIME(Comparator.comparingInt(TaskItem::getTime)),
-
     BY_TIME_REVERSED(Comparator.comparingInt(TaskItem::getTime).reversed()),
     BY_SMART(Comparator.comparingInt(TaskItem::getSmartPoints));
 

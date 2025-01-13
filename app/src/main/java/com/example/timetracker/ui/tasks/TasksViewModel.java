@@ -25,43 +25,15 @@ import java.util.Locale;
 
 public class TasksViewModel extends ViewModel {
 
-    private final MutableLiveData<String> mText;
-
+    private final MutableLiveData<String> mText = new MutableLiveData<>();
     private final MutableLiveData<List<TaskItem>> tasksItems;
-
     private final MutableLiveData<LocalDate> selectedDate = new MutableLiveData<>(LocalDate.now());
-
     private final AppDatabase db;
-
     private TaskComparators selectedComparator = TaskComparators.BY_SMART;
 
     public TasksViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is tasks fragment");
-
         tasksItems = new MutableLiveData<>(new ArrayList<>());
-
         db = AppDatabaseInstance.getInstance();
-
-        this.fetchTaskItems();
-    }
-
-    public LiveData<LocalDate> getSelectedDate() {
-        return selectedDate;
-    }
-
-    public String dateToStringForDB(LocalDate date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        return date.format(formatter);
-    }
-
-    public String dateToStringForDB(){
-        if (selectedDate.getValue() == null) return "";
-        return dateToStringForDB(selectedDate.getValue());
-    }
-
-    public void setSelectedDate(LocalDate date) {
-        selectedDate.setValue(date);
         this.fetchTaskItems();
     }
 
@@ -95,28 +67,11 @@ public class TasksViewModel extends ViewModel {
                     tasksItems.postValue(taskItemsFetched);
                     sortTasksAsync();
                 }
+                else {
+                    mText.postValue("Press + to add your first task");
+                }
             }
         }).start();
-    }
-
-    // Helper method to find TaskMain by ID
-    private TaskMain findTaskMainById(List<TaskMain> taskMains, long taskId) {
-        for (TaskMain taskMain : taskMains) {
-            if (taskMain.id == taskId) {
-                return taskMain;
-            }
-        }
-        return null;
-    }
-
-    // Helper method to find TaskMain by ID
-    private TaskDay findTaskDayByTaskId(List<TaskDay> taskDays, long Id) {
-        for (TaskDay taskDay : taskDays) {
-            if (taskDay.taskId == Id) {
-                return taskDay;
-            }
-        }
-        return null;
     }
 
     // Add a new task
@@ -160,7 +115,6 @@ public class TasksViewModel extends ViewModel {
 
     public void addTimeToTask(TaskItem taskItem, int timeToAddMinutes, LocalDate date) {
         if (taskItem == null || timeToAddMinutes == 0 || date == null) return;
-        //Wpisz zmianę do DB i odśwież front pobierając zmiany z DB - przypadek gdyby zmieniono dzień - dlatego z taskItem pobierane jest tylko id i sortowanie
 
         new Thread(new Runnable() {
             @Override
@@ -174,8 +128,7 @@ public class TasksViewModel extends ViewModel {
 
     // Update the task time at a given position direction -> 1=right, -1=left
     public void updateTaskTime(int position, int direction) {
-
-        // Najpierw aktualizacja frontu
+        // Front update first then DB
         List<TaskItem> currentTasks = tasksItems.getValue();
         String date = dateToStringForDB(getSelectedDate().getValue());
         if (currentTasks != null && position >= 0 && position < currentTasks.size() && date != null) {
@@ -192,7 +145,6 @@ public class TasksViewModel extends ViewModel {
             task.updateTime(updateValue);
             tasksItems.setValue(currentTasks);  // Notify LiveData
 
-            // Potem wpisanie nowej wartości do DB
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -201,6 +153,15 @@ public class TasksViewModel extends ViewModel {
                 }
             }).start();
         }
+    }
+
+    private TaskDay findTaskDayByTaskId(List<TaskDay> taskDays, long Id) {
+        for (TaskDay taskDay : taskDays) {
+            if (taskDay.taskId == Id) {
+                return taskDay;
+            }
+        }
+        return null;
     }
 
     public void setComparator(TaskComparators comparator){
@@ -226,19 +187,6 @@ public class TasksViewModel extends ViewModel {
             Collections.sort(currentTasks, selectedComparator.getComparator());
             tasksItems.postValue(currentTasks); // Notify observers about the sorted list
         }
-    }
-
-    public String getDayOfWeek(LocalDate date){
-        return date.getDayOfWeek()
-                .getDisplayName(TextStyle.FULL, Locale.ENGLISH);
-    }
-
-    public String getDayOfWeekToday(){
-        return getDayOfWeek(LocalDate.now());
-    }
-
-    public int getHourNow(){
-        return LocalTime.now().getHour();
     }
 
     public int calculatePointsForSmartSortForTask(long taskId){
@@ -301,9 +249,42 @@ public class TasksViewModel extends ViewModel {
         return reward;
     }
 
+    public String getDayOfWeek(LocalDate date){
+        return date.getDayOfWeek()
+                .getDisplayName(TextStyle.FULL, Locale.ENGLISH);
+    }
+
+    public String getDayOfWeekToday(){
+        return getDayOfWeek(LocalDate.now());
+    }
+
+    public int getHourNow(){
+        return LocalTime.now().getHour();
+    }
+
     public LiveData<List<TaskItem>> getTasksItems() {
         return tasksItems;
     }
+
+    public LiveData<LocalDate> getSelectedDate() {
+        return selectedDate;
+    }
+
+    public String dateToStringForDB(LocalDate date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        return date.format(formatter);
+    }
+
+    public String dateToStringForDB(){
+        if (selectedDate.getValue() == null) return "";
+        return dateToStringForDB(selectedDate.getValue());
+    }
+
+    public void setSelectedDate(LocalDate date) {
+        selectedDate.setValue(date);
+        this.fetchTaskItems();
+    }
+
     public LiveData<String> getText() {
         return mText;
     }

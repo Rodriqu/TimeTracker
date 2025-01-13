@@ -8,9 +8,7 @@ public class TaskMain {
     public long id;
 
     public String name;
-
     public int updateLeft;
-
     public int updateRight;
 
     public TaskMain(String name, int updateLeft, int updateRight) {
